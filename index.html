@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🎄 Christmas Wish</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(#0b1d3a, #123);
+  font-family: "Segoe UI", sans-serif;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 90%;
+  max-width: 420px;
+}
+
+.card {
+  background: rgba(255,255,255,0.12);
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 30px;
+  background: #25D366;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: #1e90ff;
+}
+
+.footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- CREATE VIEW -->
+  <div class="card" id="createView">
+    <h1>🎄 Christmas Wish</h1>
+    <p>Create a Christmas message and share it</p>
+
+    <input id="from" placeholder="Your name" maxlength="30">
+    <textarea id="msg" placeholder="Your Christmas message 🎅" maxlength="250"></textarea>
+
+    <button onclick="sendWish()">📲 Send via WhatsApp</button>
+  </div>
+
+  <!-- WISH VIEW -->
+  <div class="card" id="wishView" style="display:none;">
+    <h1>🎄 Merry Christmas 🎄</h1>
+    <p id="message"></p>
+    <h3 id="fromName"></h3>
+
+    <button class="secondary" onclick="shareWish()">🔁 Share this wish</button>
+    <button onclick="createOwn()">🎁 Create your own wish</button>
+  </div>
+
+</div>
+
+<!-- COPYRIGHT -->
+<div class="footer">
+  © 2025 <strong>OTIS TECH</strong>. All rights reserved.<br>
+  Unauthorized copying or distribution is prohibited.
+</div>
+
+<script>
+// Read URL parameters
+const params = new URLSearchParams(window.location.search);
+
+// Decide which view to show
+if (params.get("from") && params.get("msg")) {
+  showWish();
+} else {
+  showCreate();
+}
+
+function showCreate() {
+  document.getElementById("createView").style.display = "block";
+  document.getElementById("wishView").style.display = "none";
+}
+
+function showWish() {
+  document.getElementById("createView").style.display = "none";
+  document.getElementById("wishView").style.display = "block";
+
+  document.getElementById("message").innerText = params.get("msg");
+  document.getElementById("fromName").innerText = "— " + params.get("from");
+}
+
+// Create & send wish
+function sendWish() {
+  const from = document.getElementById("from").value.trim();
+  const msg = document.getElementById("msg").value.trim();
+
+  if (!from || !msg) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const encodedFrom = encodeURIComponent(from);
+  const encodedMsg = encodeURIComponent(msg);
+
+  // Works locally, Live Server, and GitHub Pages
+  const baseURL = window.location.href.split("?")[0];
+
+  const wishLink =
+    `${baseURL}?from=${encodedFrom}&msg=${encodedMsg}`;
+
+  const whatsappURL =
+    `https://wa.me/?text=${encodeURIComponent(
+      "🎄 I made a Christmas wish for you!\n\n" + wishLink
+    )}`;
+
+  window.open(whatsappURL, "_blank");
+}
+
+// Share existing wish
+function shareWish() {
+  const whatsappURL =
+    `https://wa.me/?text=${encodeURIComponent(
+      "🎄 Sharing a Christmas wish with you!\n\n" + window.location.href
+    )}`;
+
+  window.open(whatsappURL, "_blank");
+}
+
+// Create new wish (receiver becomes sender)
+function createOwn() {
+  window.location.href = window.location.pathname;
+}
+</script>
+
+</body>
+</html>
